@@ -2,6 +2,7 @@
 import { askGemini } from "./gemini.js";
 import { askClaude } from "./claude.js";
 import { askOpenAI } from "./openai.js";
+import { askLocal } from "./local.js";
 
 export const PROVIDERS = {
   gemini: {
@@ -33,6 +34,12 @@ export const PROVIDERS = {
     ask: askOpenAI,
     valid: (k) => k.startsWith("sk-") && !k.startsWith("sk-ant-"),
     invalid: "La clave de OpenAI empieza con sk-. Es la de platform.openai.com, no la de la suscripción de ChatGPT.",
+  },
+  local: {
+    name: "Local",
+    noKey: true,
+    ask: askLocal,
+    note: "Corre en tu navegador, gratis y sin clave. Solo en Chrome de compu (versión 148 o más). La primera vez baja el modelo, que necesita unos 22 GB libres en el disco. No ve noticias de hoy.",
   },
 };
 

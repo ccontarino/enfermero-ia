@@ -3,6 +3,7 @@ import * as m from "motion/react-m";
 import Avatar from "./Avatar.jsx";
 import { Stagger, fadeUp } from "../motion.jsx";
 import { PROVIDERS } from "../lib/ai.js";
+import { setupLocal } from "../lib/local.js";
 
 export const DEFAULT_NAME = { f: "Sofía", m: "Martín" };
 
@@ -13,21 +14,34 @@ export default function Setup({ initial, onStart }) {
   const [provider, setProvider] = useState(initial.provider || "gemini");
   const [keys, setKeys] = useState(initial.keys || {});
   const [error, setError] = useState("");
+  const [busy, setBusy] = useState("");
   const P = PROVIDERS[provider];
   const key = keys[provider] || "";
   const setKey = (v) => { setKeys({ ...keys, [provider]: v }); setError(""); };
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
     const k = key.trim();
-    if (!P.valid(k)) { setError(P.invalid); return; }
+    if (!P.noKey && !P.valid(k)) { setError(P.invalid); return; }
     const gem = (keys.gemini || "").trim();
     if (provider !== "gemini" && gem && !PROVIDERS.gemini.valid(gem)) { setError(PROVIDERS.gemini.invalid); return; }
+    if (provider === "local") {
+      // Prepara el modelo del navegador (se baja la primera vez); tiene que ser desde este toque.
+      try {
+        setBusy("Preparando la IA local…");
+        await setupLocal({ onProgress: (p) => setBusy(`Descargando el modelo… ${Math.round(p * 100)}%`) });
+      } catch (err) {
+        setBusy("");
+        setError(err.message);
+        return;
+      }
+      setBusy("");
+    }
     onStart({
       gender, provider,
       name: name.trim() || DEFAULT_NAME[gender],
       city: city.trim(),
-      keys: { ...keys, [provider]: k, ...(gem ? { gemini: gem } : {}) },
+      keys: { ...keys, ...(P.noKey ? {} : { [provider]: k }), ...(gem ? { gemini: gem } : {}) },
     });
   };
 
@@ -85,6 +99,9 @@ export default function Setup({ initial, onStart }) {
             </div>
           </div>
 
+          {P.noKey ? (
+            <p className="note">{P.note}</p>
+          ) : (
           <label className="field">
             <span>{P.keyLabel}</span>
             <input
@@ -101,6 +118,7 @@ export default function Setup({ initial, onStart }) {
               {provider !== "gemini" && " Es la clave de la API, no la de la suscripción, y la cuenta necesita crédito."}
             </small>
           </label>
+          )}
 
           {provider !== "gemini" && (
             <label className="field">
@@ -118,7 +136,7 @@ export default function Setup({ initial, onStart }) {
 
           {error && <p className="error" role="alert">{error}</p>}
 
-          <button className="btn" type="submit">Empezar a charlar</button>
+          <button className="btn" type="submit" disabled={!!busy}>{busy || "Empezar a charlar"}</button>
           <p className="fine">Es una compañía para charlar y orientarte. No reemplaza a tu médico.</p>
         </m.form>
       </Stagger>

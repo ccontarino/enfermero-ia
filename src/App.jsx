@@ -12,7 +12,8 @@ export default function App() {
     return p;
   });
   const [fresh, setFresh] = useState(false);
-  const [view, setView] = useState(prefs.keys[prefs.provider] && prefs.name ? "chat" : "setup");
+  const ready = (p) => p.name && (p.provider === "local" || p.keys[p.provider]);
+  const [view, setView] = useState(ready(prefs) ? "chat" : "setup");
 
   const update = (patch) => {
     const next = { ...prefs, ...patch };
