@@ -60,7 +60,7 @@ a { color: var(--green-ink); }
 input { width: 100%; padding: 0.85rem 0.95rem; border: 1px solid var(--line); border-radius: 4px; background: #fff; font-size: 1rem; outline: none; transition: border-color var(--press); }
 input:focus { border-color: var(--green); }
 .seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
-.seg__opt { padding: 0.7rem 0.5rem; font-weight: 600; font-size: 0.95rem; border-bottom: 3px solid transparent; }
+.seg__opt { padding: 0.7rem 0.25rem; font-weight: 600; font-size: 0.95rem; border-bottom: 3px solid transparent; }
 .seg__opt + .seg__opt { border-left: 1px solid var(--line); }
 .seg__opt.is-on { background: var(--ok-soft); border-bottom-color: var(--green); }
 .error { color: var(--danger); background: var(--danger-soft); padding: 0.7rem 0.9rem; border-radius: 4px; font-size: 0.92rem; }

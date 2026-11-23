@@ -56,4 +56,4 @@ export async function prepare({ persona, history, onStatus }) {
 }
 
 export const tidy = (t) =>
-  (t || "").replace(/\[\d+(?:,\s*\d+)*\]/g, "").replace(/\s+/g, " ").trim();
+  (t || "").replace(/\[\d+(?:,\s*\d+)*\]/g, "").replace(/\s+/g, " ").replace(/\s+([.,;:!?])/g, "$1").trim();

@@ -22,7 +22,7 @@ export default function Setup({ initial, onStart }) {
     const k = key.trim();
     if (!P.valid(k)) { setError(P.invalid); return; }
     const gem = (keys.gemini || "").trim();
-    if (provider === "openai" && gem && !PROVIDERS.gemini.valid(gem)) { setError(PROVIDERS.gemini.invalid); return; }
+    if (provider !== "gemini" && gem && !PROVIDERS.gemini.valid(gem)) { setError(PROVIDERS.gemini.invalid); return; }
     onStart({
       gender, provider,
       name: name.trim() || DEFAULT_NAME[gender],
@@ -98,11 +98,11 @@ export default function Setup({ initial, onStart }) {
             <small>
               Se guarda solo en este navegador. La sacás en{" "}
               <a href={P.link} target="_blank" rel="noreferrer">{P.linkText}</a>.
-              {provider === "openai" && " Es distinta de la suscripción de ChatGPT y necesita crédito en la cuenta de la API."}
+              {provider !== "gemini" && " Es la clave de la API, no la de la suscripción, y la cuenta necesita crédito."}
             </small>
           </label>
 
-          {provider === "openai" && (
+          {provider !== "gemini" && (
             <label className="field">
               <span>Clave de Gemini para la voz <em>opcional</em></span>
               <input
