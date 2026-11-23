@@ -56,18 +56,18 @@ export default function Setup({ initial, onStart }) {
 
           {showKey ? (
             <label className="field">
-              <span>Clave de la API de Claude</span>
+              <span>Clave de la API de Gemini</span>
               <input
                 type="password"
                 value={key}
                 onInput={(e) => setKey(e.target.value)}
-                placeholder="sk-ant-…"
+                placeholder="AIza…"
                 autoComplete="off"
                 required
               />
               <small>
                 Se guarda solo en este navegador. La sacás en{" "}
-                <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noreferrer">console.anthropic.com</a>.
+                <a href="https://aistudio.google.com/apikey" target="_blank" rel="noreferrer">aistudio.google.com/apikey</a>.
               </small>
             </label>
           ) : (

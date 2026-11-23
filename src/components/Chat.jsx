@@ -69,10 +69,9 @@ export default function Chat({ persona, voiceOn, setVoiceOn, onBack, onKeyError 
       if (e.name === "AbortError") return;
       setMode("idle");
       setMsgs((h) => h.slice(0, -1));
-      if (e.status === 401) { setStatus("La clave de la API no es válida."); onKeyError(); }
-      else if (e.status === 429) setStatus("Muchas preguntas seguidas. Esperá un momento.");
-      else if (e.status === 400 && /credit/i.test(e.message)) setStatus("Tu cuenta de la API no tiene crédito.");
-      else setStatus("No pude responder. Revisá la conexión y probá de nuevo.");
+      if (e.code === "key") { setStatus("La clave de la API no es válida o no tiene permiso."); onKeyError(); }
+      else if (e.code === "quota") setStatus("Muchas preguntas seguidas o se acabó la cuota. Esperá un momento.");
+      else setStatus(`No pude responder: ${e.message || "revisá la conexión"}`.slice(0, 160));
     }
   };
 

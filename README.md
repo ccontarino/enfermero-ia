@@ -6,9 +6,9 @@ Charlá por voz con tu enfermera o enfermero virtual. Elegís quién te acompañ
 
 ## Cómo funciona
 
-- **IA:** Claude (API de Anthropic). Cada persona carga su clave, que queda guardada solo en su navegador.
+- **IA:** Gemini (API de Google, modelo `gemini-3.5-flash-lite`). Cada persona carga su clave de [Google AI Studio](https://aistudio.google.com/apikey), que queda guardada solo en su navegador.
 - **Clima real:** [Open-Meteo](https://open-meteo.com) (gratis, sin clave).
-- **Noticias:** búsqueda web de Claude.
+- **Noticias:** búsqueda de Google integrada en Gemini.
 - **Voz:** Web Speech API del navegador (micrófono y lectura en voz alta). Mejor en Chrome.
 
 > Es una compañía para charlar y orientarte. No reemplaza a tu médico.
