@@ -3,7 +3,8 @@ import { AnimatePresence } from "motion/react";
 import * as m from "motion/react-m";
 import Avatar from "./Avatar.jsx";
 import { ask } from "../lib/ai.js";
-import { canListen, listen, speak, stopSpeaking } from "../lib/voice.js";
+import { canListen, listen } from "../lib/voice.js";
+import { speakText } from "../lib/speech.js";
 import { ease } from "../motion.jsx";
 
 const SUGGESTIONS = [
@@ -20,7 +21,7 @@ const bubble = {
   animate: { opacity: 1, y: 0, transition: { duration: 0.24, ease } },
 };
 
-export default function Chat({ persona, voiceOn, setVoiceOn, onBack, onKeyError }) {
+export default function Chat({ persona, voiceOn, setVoiceOn, onBack, onKeyError, greet }) {
   const rol = persona.gender === "f" ? "enfermera" : "enfermero";
   const hello = `¡Hola! Soy ${persona.name}, tu ${rol}. ¿Cómo andás hoy? Podemos hablar de lo que quieras.`;
   const [msgs, setMsgs] = useState([{ role: "assistant", content: hello }]);
@@ -31,22 +32,44 @@ export default function Chat({ persona, voiceOn, setVoiceOn, onBack, onKeyError 
   const stopRef = useRef(null);
   const abortRef = useRef(null);
   const listRef = useRef(null);
+  const avatarRef = useRef(null);
+  const voiceRef = useRef(null);
 
   useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
   }, [msgs, partial]);
 
-  useEffect(() => () => { stopSpeaking(); abortRef.current?.abort(); stopRef.current?.(); }, []);
+  const onLevel = (l) => avatarRef.current?.style.setProperty("--mouth", l.toFixed(2));
+
+  const halt = () => {
+    voiceRef.current?.stop();
+    voiceRef.current = null;
+    onLevel(0);
+    setMode((md) => (md === "talking" ? "idle" : md));
+  };
+
+  useEffect(() => () => { voiceRef.current?.stop(); abortRef.current?.abort(); stopRef.current?.(); }, []);
 
   const say = (t) => {
-    if (!voiceOn) return;
-    speak(t, persona.gender, { onStart: () => setMode("talking"), onEnd: () => setMode("idle") });
+    if (!voiceOn || !t) return;
+    halt();
+    voiceRef.current = speakText({
+      key: persona.key,
+      text: t,
+      gender: persona.gender,
+      onLevel,
+      onStart: () => setMode("talking"),
+      onEnd: () => { onLevel(0); setMode((md) => (md === "talking" ? "idle" : md)); },
+    });
   };
+
+  // Saluda en voz alta cuando recién se eligió enfermera/enfermero.
+  useEffect(() => { if (greet) say(hello); }, []);
 
   const send = async (raw) => {
     const q = (raw || "").trim();
     if (!q || mode === "thinking") return;
-    stopSpeaking();
+    halt();
     const history = [...msgs, { role: "user", content: q }];
     setMsgs(history);
     setMode("thinking");
@@ -76,7 +99,7 @@ export default function Chat({ persona, voiceOn, setVoiceOn, onBack, onKeyError 
   };
 
   const toggleMic = () => {
-    stopSpeaking();
+    halt();
     if (mode === "listening") { stopRef.current?.(); return; }
     if (mode === "thinking") return;
     setMode("listening");
@@ -110,7 +133,7 @@ export default function Chat({ persona, voiceOn, setVoiceOn, onBack, onKeyError 
   };
 
   const toggleVoice = () => {
-    if (voiceOn) { stopSpeaking(); setMode((md) => (md === "talking" ? "idle" : md)); }
+    if (voiceOn) halt();
     setVoiceOn(!voiceOn);
   };
 
@@ -131,7 +154,7 @@ export default function Chat({ persona, voiceOn, setVoiceOn, onBack, onKeyError 
       </header>
 
       <div className="stage">
-        <Avatar gender={persona.gender} state={mode} size={148} />
+        <Avatar gender={persona.gender} state={mode} size={148} innerRef={avatarRef} />
         <p className="status" aria-live="polite">{status}</p>
       </div>
 

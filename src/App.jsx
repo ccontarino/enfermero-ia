@@ -6,6 +6,7 @@ import { load, save } from "./lib/store.js";
 
 export default function App() {
   const [prefs, setPrefs] = useState(() => ({ voiceOn: true, ...load() }));
+  const [fresh, setFresh] = useState(false);
   const [view, setView] = useState(prefs.key && prefs.name ? "chat" : "setup");
 
   const update = (patch) => {
@@ -20,12 +21,13 @@ export default function App() {
         {view === "setup" ? (
           <Setup
             initial={prefs}
-            onStart={(p) => { update(p); setView("chat"); }}
+            onStart={(p) => { update(p); setFresh(true); setView("chat"); }}
           />
         ) : (
           <Chat
             key={prefs.gender + prefs.name}
             persona={prefs}
+            greet={fresh}
             voiceOn={prefs.voiceOn}
             setVoiceOn={(v) => update({ voiceOn: v })}
             onBack={() => setView("setup")}

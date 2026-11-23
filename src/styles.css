@@ -114,13 +114,21 @@ input:focus { border-color: var(--green); }
 .avatar--thinking::after { border-color: var(--panel); opacity: 1; border-top-color: var(--green); animation: spin 0.9s linear infinite; }
 @keyframes halo { 0% { opacity: 0.7; transform: scale(0.96); } 100% { opacity: 0; transform: scale(1.12); } }
 @keyframes spin { to { transform: rotate(360deg); } }
-.avatar__mouth { transform-origin: 100px 128px; transform: scaleY(0.2); }
-.avatar--talking .avatar__mouth { animation: talk 0.26s ease-in-out infinite alternate; }
-@keyframes talk { from { transform: scaleY(0.2); } to { transform: scaleY(1); } }
+/* La boca sigue --mouth (0 a 1), que el chat actualiza con el volumen de la voz. */
+.avatar { --mouth: 0; }
+.avatar__mouth { transform-origin: 100px 126px; transform: scale(calc(0.8 + var(--mouth) * 0.3), calc(var(--mouth) * 1.05)); opacity: calc(var(--mouth) * 8); }
+.avatar__smile { opacity: calc(1 - var(--mouth) * 8); }
+.avatar__head { transform-origin: 100px 150px; transform: translateY(calc(var(--mouth) * 1.6px)) rotate(var(--tilt, 0deg)); transition: transform 0.12s linear; }
+.avatar--talking .avatar__head { animation: sway 2.6s ease-in-out infinite; }
+.avatar--listening { --tilt: -3deg; }
+.avatar--listening .avatar__brows { transform: translateY(-3px); }
+.avatar__brows { transition: transform 0.25s var(--ease-out); }
+.avatar--thinking .avatar__eyes { transform: translateY(-2px); }
+@keyframes sway { 0%, 100% { rotate: -1.2deg; } 50% { rotate: 1.2deg; } }
 .avatar__eyes { transform-origin: 100px 97px; animation: blink 4.5s infinite; }
 @keyframes blink { 0%, 95%, 100% { transform: scaleY(1); } 97% { transform: scaleY(0.1); } }
 
 @media (prefers-reduced-motion: reduce) {
   .avatar::after, .avatar__eyes, .mic.is-on, .msg--dots i { animation: none; }
-  .avatar--talking .avatar__mouth { animation: none; transform: scaleY(0.6); }
+  .avatar--talking .avatar__head { animation: none; }
 }
