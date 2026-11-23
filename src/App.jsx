@@ -5,15 +5,23 @@ import Chat from "./components/Chat.jsx";
 import { load, save } from "./lib/store.js";
 
 export default function App() {
-  const [prefs, setPrefs] = useState(() => ({ voiceOn: true, ...load() }));
+  const [prefs, setPrefs] = useState(() => {
+    const p = { voiceOn: true, provider: "gemini", ...load() };
+    if (!p.keys) p.keys = p.key ? { gemini: p.key } : {}; // versión anterior: una sola clave, de Gemini
+    delete p.key;
+    return p;
+  });
   const [fresh, setFresh] = useState(false);
-  const [view, setView] = useState(prefs.key && prefs.name ? "chat" : "setup");
+  const [view, setView] = useState(prefs.keys[prefs.provider] && prefs.name ? "chat" : "setup");
 
   const update = (patch) => {
     const next = { ...prefs, ...patch };
     setPrefs(next);
     save(next);
   };
+
+  // Lo que necesita el chat: la clave del proveedor elegido y, para la voz natural, la de Gemini.
+  const persona = { ...prefs, key: prefs.keys[prefs.provider], voiceKey: prefs.keys.gemini || "" };
 
   return (
     <LazyMotion features={domAnimation} strict>
@@ -26,12 +34,12 @@ export default function App() {
         ) : (
           <Chat
             key={prefs.gender + prefs.name}
-            persona={prefs}
+            persona={persona}
             greet={fresh}
             voiceOn={prefs.voiceOn}
             setVoiceOn={(v) => update({ voiceOn: v })}
             onBack={() => setView("setup")}
-            onKeyError={() => update({ key: "" })}
+            onKeyError={() => { update({ keys: { ...prefs.keys, [prefs.provider]: "" } }); setView("setup"); }}
           />
         )}
       </MotionConfig>

@@ -6,10 +6,10 @@ Charlá por voz con tu enfermera o enfermero virtual. Elegís quién te acompañ
 
 ## Cómo funciona
 
-- **IA:** Gemini (API de Google, modelo `gemini-3.5-flash-lite`). Cada persona carga su clave de [Google AI Studio](https://aistudio.google.com/apikey), que queda guardada solo en su navegador.
+- **IA:** a elección, Gemini (Google) u OpenAI (ChatGPT). Cada persona carga su propia clave de API ([Google AI Studio](https://aistudio.google.com/apikey) o [platform.openai.com](https://platform.openai.com/api-keys)), que queda guardada solo en su navegador. La clave de OpenAI es la de la API, no la de la suscripción de ChatGPT.
 - **Clima real:** [Open-Meteo](https://open-meteo.com) (gratis, sin clave).
-- **Noticias:** búsqueda de Google integrada en Gemini.
-- **Voz:** Web Speech API del navegador (micrófono y lectura en voz alta). Mejor en Chrome.
+- **Noticias:** búsqueda web integrada en cada proveedor.
+- **Voz:** la enfermera habla con la voz natural de Gemini TTS (con una clave de Gemini) y la boca sigue el volumen del audio; sin esa clave usa la voz del navegador. El micrófono usa la Web Speech API. Mejor en Chrome.
 
 > Es una compañía para charlar y orientarte. No reemplaza a tu médico.
 

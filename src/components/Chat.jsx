@@ -54,7 +54,7 @@ export default function Chat({ persona, voiceOn, setVoiceOn, onBack, onKeyError,
     if (!voiceOn || !t) return;
     halt();
     voiceRef.current = speakText({
-      key: persona.key,
+      key: persona.voiceKey,
       text: t,
       gender: persona.gender,
       onLevel,

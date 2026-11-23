@@ -1,8 +1,8 @@
 import { useState } from "react";
 import * as m from "motion/react-m";
 import Avatar from "./Avatar.jsx";
-import { Stagger } from "../motion.jsx";
-import { fadeUp } from "../motion.jsx";
+import { Stagger, fadeUp } from "../motion.jsx";
+import { PROVIDERS } from "../lib/ai.js";
 
 export const DEFAULT_NAME = { f: "Sofía", m: "Martín" };
 
@@ -10,12 +10,25 @@ export default function Setup({ initial, onStart }) {
   const [gender, setGender] = useState(initial.gender || "f");
   const [name, setName] = useState(initial.name || "");
   const [city, setCity] = useState(initial.city || "");
-  const [key, setKey] = useState(initial.key || "");
-  const [showKey, setShowKey] = useState(!initial.key);
+  const [provider, setProvider] = useState(initial.provider || "gemini");
+  const [keys, setKeys] = useState(initial.keys || {});
+  const [error, setError] = useState("");
+  const P = PROVIDERS[provider];
+  const key = keys[provider] || "";
+  const setKey = (v) => { setKeys({ ...keys, [provider]: v }); setError(""); };
 
   const submit = (e) => {
     e.preventDefault();
-    onStart({ gender, name: name.trim() || DEFAULT_NAME[gender], city: city.trim(), key: key.trim() });
+    const k = key.trim();
+    if (!P.valid(k)) { setError(P.invalid); return; }
+    const gem = (keys.gemini || "").trim();
+    if (provider === "openai" && gem && !PROVIDERS.gemini.valid(gem)) { setError(PROVIDERS.gemini.invalid); return; }
+    onStart({
+      gender, provider,
+      name: name.trim() || DEFAULT_NAME[gender],
+      city: city.trim(),
+      keys: { ...keys, [provider]: k, ...(gem ? { gemini: gem } : {}) },
+    });
   };
 
   return (
@@ -54,25 +67,56 @@ export default function Setup({ initial, onStart }) {
             <input value={city} onInput={(e) => setCity(e.target.value)} placeholder="Buenos Aires" maxLength={40} />
           </label>
 
-          {showKey ? (
+          <div className="field">
+            <span>Inteligencia artificial</span>
+            <div className="seg" role="radiogroup" aria-label="Proveedor de IA">
+              {Object.entries(PROVIDERS).map(([id, p]) => (
+                <button
+                  type="button"
+                  key={id}
+                  role="radio"
+                  aria-checked={provider === id}
+                  className={`seg__opt${provider === id ? " is-on" : ""}`}
+                  onClick={() => { setProvider(id); setError(""); }}
+                >
+                  {p.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <label className="field">
+            <span>{P.keyLabel}</span>
+            <input
+              type="password"
+              value={key}
+              onInput={(e) => setKey(e.target.value)}
+              placeholder={P.placeholder}
+              autoComplete="off"
+              required
+            />
+            <small>
+              Se guarda solo en este navegador. La sacás en{" "}
+              <a href={P.link} target="_blank" rel="noreferrer">{P.linkText}</a>.
+              {provider === "openai" && " Es distinta de la suscripción de ChatGPT y necesita crédito en la cuenta de la API."}
+            </small>
+          </label>
+
+          {provider === "openai" && (
             <label className="field">
-              <span>Clave de la API de Gemini</span>
+              <span>Clave de Gemini para la voz <em>opcional</em></span>
               <input
                 type="password"
-                value={key}
-                onInput={(e) => setKey(e.target.value)}
+                value={keys.gemini || ""}
+                onInput={(e) => { setKeys({ ...keys, gemini: e.target.value }); setError(""); }}
                 placeholder="AIza…"
                 autoComplete="off"
-                required
               />
-              <small>
-                Se guarda solo en este navegador. La sacás en{" "}
-                <a href="https://aistudio.google.com/apikey" target="_blank" rel="noreferrer">aistudio.google.com/apikey</a>.
-              </small>
+              <small>Con ella habla con una voz natural. Sin ella usa la voz del navegador.</small>
             </label>
-          ) : (
-            <button type="button" className="link" onClick={() => setShowKey(true)}>Cambiar clave de la API</button>
           )}
+
+          {error && <p className="error" role="alert">{error}</p>}
 
           <button className="btn" type="submit">Empezar a charlar</button>
           <p className="fine">Es una compañía para charlar y orientarte. No reemplaza a tu médico.</p>
