@@ -39,7 +39,7 @@ export const PROVIDERS = {
     name: "Local",
     noKey: true,
     ask: askLocal,
-    note: "Corre en tu navegador, gratis y sin clave. Solo en Chrome de compu (versión 148 o más). La primera vez baja el modelo, que necesita unos 22 GB libres en el disco. No ve noticias de hoy.",
+    note: "Corre en tu dispositivo: gratis, sin clave y sin salir de acá. En Chrome de compu usa Gemini Nano (necesita unos 22 GB libres). En el celu y otros navegadores con WebGPU baja Qwen3 0.6B (unos 600 MB, la primera vez), que es experimental: es un modelo chico y puede equivocarse. No ve noticias de hoy.",
   },
 };
 

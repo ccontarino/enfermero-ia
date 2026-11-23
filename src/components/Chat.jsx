@@ -158,6 +158,10 @@ export default function Chat({ persona, voiceOn, setVoiceOn, onBack, onKeyError,
         <p className="status" aria-live="polite">{status}</p>
       </div>
 
+      {persona.provider === "local" && persona.localEngine === "webllm" && (
+        <p className="fine fine--warn">IA local experimental: es un modelo chico y puede equivocarse. Ante dudas de salud, consultá a tu médico.</p>
+      )}
+
       <div className="msgs" ref={listRef}>
         {msgs.map((msg, i) => (
           <m.p key={i} {...bubble} className={`msg msg--${msg.role === "user" ? "me" : "bot"}`}>{msg.content}</m.p>

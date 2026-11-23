@@ -25,11 +25,12 @@ export default function Setup({ initial, onStart }) {
     if (!P.noKey && !P.valid(k)) { setError(P.invalid); return; }
     const gem = (keys.gemini || "").trim();
     if (provider !== "gemini" && gem && !PROVIDERS.gemini.valid(gem)) { setError(PROVIDERS.gemini.invalid); return; }
+    let localEngine;
     if (provider === "local") {
       // Prepara el modelo del navegador (se baja la primera vez); tiene que ser desde este toque.
       try {
         setBusy("Preparando la IA local…");
-        await setupLocal({ onProgress: (p) => setBusy(`Descargando el modelo… ${Math.round(p * 100)}%`) });
+        localEngine = await setupLocal({ onProgress: (p) => setBusy(`Descargando el modelo… ${Math.round(p * 100)}%`) });
       } catch (err) {
         setBusy("");
         setError(err.message);
@@ -38,7 +39,7 @@ export default function Setup({ initial, onStart }) {
       setBusy("");
     }
     onStart({
-      gender, provider,
+      gender, provider, localEngine,
       name: name.trim() || DEFAULT_NAME[gender],
       city: city.trim(),
       keys: { ...keys, ...(P.noKey ? {} : { [provider]: k }), ...(gem ? { gemini: gem } : {}) },

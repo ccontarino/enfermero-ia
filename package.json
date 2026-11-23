@@ -12,8 +12,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "preact": "^11.2.0",
-    "motion": "^14.14.0"
+    "@mlc-ai/web-llm": "^0.2.89",
+    "motion": "^14.14.0",
+    "preact": "^11.2.0"
   },
   "devDependencies": {
     "@preact/preset-vite": "^2.10.5",
