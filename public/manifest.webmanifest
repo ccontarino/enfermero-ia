@@ -1,0 +1,10 @@
+{
+  "name": "Enfermero IA",
+  "short_name": "Enfermero IA",
+  "start_url": "/enfermero-ia/",
+  "scope": "/enfermero-ia/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#101B27",
+  "icons": [{ "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml" }]
+}
